@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LibreArt - Espacio Cultural y Gastronómico</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      --cafe-intenso: #382417;
+      --caramelo-tostado: #6D3C1C;
+      --miel: #C57938;
+      --vainilla: #E7C196;
+      --blanco-puro: #FFFFFF;
+    }
+
+    body {
+      background-color: var(--cafe-intenso);
+      color: var(--vainilla);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    /* Scrollbar personalizada */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--cafe-intenso);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--caramelo-tostado);
+      border-radius: 4px;
+    }
+
+    /* Estilos del Menú Lateral basados en el diseño Dashboard */
+    .sidebar-menu {
+      background-color: #2A1A10;
+      border-right: 1px solid var(--caramelo-tostado);
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.85rem 1.25rem;
+      color: var(--vainilla);
+      font-weight: 700;
+      font-size: 1.05rem;
+      border-radius: 0.75rem;
+      margin-bottom: 0.5rem;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .nav-item:hover {
+      background-color: var(--caramelo-tostado);
+      color: var(--blanco-puro);
+    }
+
+    /* Pestaña / Opción Activa */
+    .nav-item.active {
+      background-color: var(--miel) !important;
+      color: var(--cafe-intenso) !important;
+      box-shadow: 0 4px 14px rgba(197, 121, 56, 0.4);
+    }
+
+    /* Estilos de tarjeta generales */
+    .card-item {
+      background-color: var(--caramelo-tostado);
+      border: 1px solid rgba(231, 193, 150, 0.2);
+      transition: all 0.25s ease;
+    }
+    .card-item:hover {
+      transform: translateY(-3px);
+      border-color: var(--miel);
+      box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .btn-miel {
+      background-color: var(--miel);
+      color: var(--cafe-intenso);
+      font-weight: 700;
+      transition: all 0.2s ease;
+    }
+    .btn-miel:hover {
+      background-color: var(--vainilla);
+      color: var(--cafe-intenso);
+      box-shadow: 0 0 12px rgba(231, 193, 150, 0.4);
+    }
+
+    /* Sub-filtro activo en la vista de Cafetería */
+    .subfilter-btn.active {
+      background-color: var(--miel);
+      color: var(--cafe-intenso);
+      font-weight: 800;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col md:flex-row">
+
+  <!-- ========================================== -->
+  <!-- BARRA LATERAL (SIDEBAR MENU) -->
+  <!-- ========================================== -->
+  <aside class="sidebar-menu w-full md:w-64 md:min-h-screen flex flex-col justify-between p-4 flex-shrink-0">
+    <div>
+      <!-- LOGO / ENCABEZADO MENÚ -->
+      <div class="flex items-center gap-3 px-2 py-4 mb-6 border-b border-[#6D3C1C]">
+        <div class="w-12 h-12 rounded-full bg-[#C57938] flex items-center justify-center text-[#FFFFFF] shadow-lg border-2 border-[#E7C196]">
+          <i data-lucide="coffee" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl font-extrabold tracking-wider text-[#FFFFFF] leading-none">MENÚ</h1>
+          <span class="text-xs text-[#E7C196] font-semibold tracking-wide">Selecciona una Sección</span>
+        </div>
+      </div>
+
+      <!-- OPCIONES DE NAVEGACIÓN PRINCIPALES -->
+      <nav id="sidebarNav" class="space-y-1">
+        <div onclick="selectSection('todos', this)" class="nav-item active">
+          <i data-lucide="home" class="w-6 h-6"></i>
+          <span>Inicio / Todos</span>
+        </div>
+
+        <div onclick="selectSection('cafeteria', this)" class="nav-item">
+          <i data-lucide="coffee" class="w-6 h-6"></i>
+          <span>Menú Cafetería</span>
+        </div>
+
+        <div onclick="selectSection('talleres', this)" class="nav-item">
+          <i data-lucide="palette" class="w-6 h-6"></i>
+          <span>Talleres de Arte</span>
+        </div>
+
+        <div onclick="selectSection('biblioteca', this)" class="nav-item">
+          <i data-lucide="book-open" class="w-6 h-6"></i>
+          <span>Biblioteca</span>
+        </div>
+
+        <div onclick="selectSection('cine', this)" class="nav-item">
+          <i data-lucide="film" class="w-6 h-6"></i>
+          <span>Cine Clásico</span>
+        </div>
+      </nav>
+    </div>
+
+    <!-- BOTÓN DE CARRITO EN MENÚ LATERAL -->
+    <div class="pt-4 border-t border-[#6D3C1C] mt-6">
+      <button 
+        onclick="toggleCart()" 
+        class="w-full btn-miel py-3 px-4 rounded-xl flex items-center justify-between shadow-lg"
+      >
+        <div class="flex items-center gap-2">
+          <i data-lucide="shopping-bag" class="w-5 h-5 text-[#382417]"></i>
+          <span class="font-bold text-[#382417]">Ver Pedido</span>
+        </div>
+        <span id="cartBadge" class="bg-[#FFFFFF] text-[#382417] font-extrabold text-xs px-2.5 py-1 rounded-full shadow-sm">
+          0
+        </span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ========================================== -->
+  <!-- ÁREA DE CONTENIDO PRINCIPAL -->
+  <!-- ========================================== -->
+  <main class="flex-1 flex flex-col min-w-0">
+
+    <!-- HEADER SUPERIOR CON BUSCADOR -->
+    <header class="bg-[#382417] border-b border-[#6D3C1C] p-4 sticky top-0 z-30 flex items-center justify-between gap-4">
+      <div class="flex-1 max-w-xl relative">
+        <input 
+          type="text" 
+          id="searchInput" 
+          placeholder="Buscar película, café, torta, taller..." 
+          oninput="handleSearch(this.value)"
+          class="w-full bg-[#6D3C1C]/60 text-[#FFFFFF] placeholder-[#E7C196]/60 border border-[#6D3C1C] rounded-full py-2.5 pl-10 pr-4 focus:outline-none focus:border-[#C57938] focus:bg-[#6D3C1C] text-sm transition-all"
+        >
+        <i data-lucide="search" class="w-4 h-4 text-[#C57938] absolute left-3.5 top-3"></i>
+      </div>
+
+      <div class="text-right hidden sm:block">
+        <h2 class="text-lg font-bold text-[#FFFFFF] leading-tight">LibreArt Espacio Cultural</h2>
+        <span class="text-xs text-[#E7C196]">Buenos Aires, Argentina</span>
+      </div>
+    </header>
+
+    <!-- CONTENIDO DE LA PÁGINA -->
+    <div class="p-4 md:p-8 flex-1 max-w-7xl mx-auto w-full">
+      
+      <!-- ENCABEZADO DE SECCIÓN -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 border-b border-[#6D3C1C] pb-4">
+        <div>
+          <h2 id="sectionTitle" class="text-2xl font-extrabold text-[#FFFFFF] tracking-wide">
+            Inicio / Bienvenidos a LibreArt
+          </h2>
+          <p id="sectionSub" class="text-xs text-[#E7C196] mt-1">Conocé nuestra propuesta cultural, gastronómica y todas nuestras especialidades.</p>
+        </div>
+        <span id="itemCount" class="text-xs font-bold text-[#382417] bg-[#E7C196] px-3 py-1.5 rounded-full self-start sm:self-auto shadow-sm">
+          Cargando opciones...
+        </span>
+      </div>
+
+      <!-- BANNER INSTITUCIONAL DE INICIO -->
+      <div id="homeBanner" class="mb-8 bg-gradient-to-r from-[#6D3C1C] to-[#382417] border border-[#C57938]/40 rounded-2xl p-6 md:p-8 shadow-xl">
+        <div class="max-w-3xl">
+          <span class="bg-[#C57938] text-[#FFFFFF] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest inline-block mb-3">
+            Café, Arte y Literatura en Buenos Aires
+          </span>
+          <h3 class="text-2xl md:text-3xl font-black text-[#FFFFFF] mb-3">
+            ¿Qué es LibreArt?
+          </h3>
+          <p class="text-sm md:text-base text-[#E7C196] leading-relaxed mb-4">
+            <strong>LibreArt</strong> es un refugio urbano concebido para fusionar la pasión por el café de especialidad con la creación artística, el placer de la lectura y el cine de autor. Nuestro espacio está diseñado para que te desconectes de la rutina y te conectes con los sentidos.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 pt-4 border-t border-[#6D3C1C]">
+            <div class="flex items-start gap-3">
+              <div class="p-2 rounded-lg bg-[#382417] text-[#C57938] mt-0.5">
+                <i data-lucide="coffee" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-[#FFFFFF] text-sm">Cafetería & Gastronomía</h4>
+                <p class="text-xs text-[#E7C196]">Espressos, lattes, submarinos, tortas artesanales (Rogel, Ricota), smoothies naturales y sándwiches clásicos de miga.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="p-2 rounded-lg bg-[#382417] text-[#C57938] mt-0.5">
+                <i data-lucide="palette" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-[#FFFFFF] text-sm">Talleres de Arte</h4>
+                <p class="text-xs text-[#E7C196]">Sesiones prácticas de cerámica en torno y estaciones de pintura libre para inspirarte mientras consumís.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="p-2 rounded-lg bg-[#382417] text-[#C57938] mt-0.5">
+                <i data-lucide="book-open" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-[#FFFFFF] text-sm">Biblioteca en Sala</h4>
+                <p class="text-xs text-[#E7C196]">Catálogo abierto de novelas clásicas y poesía para lectura en mesa o membresías mensuales a domicilio.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="p-2 rounded-lg bg-[#382417] text-[#C57938] mt-0.5">
+                <i data-lucide="film" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-[#FFFFFF] text-sm">Cine Clásico & Debate</h4>
+                <p class="text-xs text-[#E7C196]">Proyecciones de adaptaciones cinematográficas de obras literarias acompañadas de un espacio de charla.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUBFILTROS RÁPIDOS PARA CAFETERÍA -->
+      <div id="subFilterContainer" class="hidden mb-6 flex flex-wrap gap-2">
+        <button onclick="filterSubCategory('todos')" class="subfilter-btn active text-xs px-3.5 py-1.5 rounded-full border border-[#6D3C1C] bg-[#6D3C1C]/40 text-[#E7C196] transition-all hover:border-[#C57938]">
+          Todo en Cafetería
+        </button>
+        <button onclick="filterSubCategory('bebidas')" class="subfilter-btn text-xs px-3.5 py-1.5 rounded-full border border-[#6D3C1C] bg-[#6D3C1C]/40 text-[#E7C196] transition-all hover:border-[#C57938]">
+          Café & Bebidas
+        </button>
+        <button onclick="filterSubCategory('reposteria')" class="subfilter-btn text-xs px-3.5 py-1.5 rounded-full border border-[#6D3C1C] bg-[#6D3C1C]/40 text-[#E7C196] transition-all hover:border-[#C57938]">
+          Tortas & Pasteles
+        </button>
+        <button onclick="filterSubCategory('smoothies')" class="subfilter-btn text-xs px-3.5 py-1.5 rounded-full border border-[#6D3C1C] bg-[#6D3C1C]/40 text-[#E7C196] transition-all hover:border-[#C57938]">
+          Smoothies
+        </button>
+        <button onclick="filterSubCategory('salados')" class="subfilter-btn text-xs px-3.5 py-1.5 rounded-full border border-[#6D3C1C] bg-[#6D3C1C]/40 text-[#E7C196] transition-all hover:border-[#C57938]">
+          Salados & Extras
+        </button>
+      </div>
+
+      <!-- CONTENEDOR DE PRODUCTOS / CARTELERA -->
+      <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Contenido dinámico generado con JavaScript -->
+      </div>
+    </div>
+  </main>
+
+  <!-- DRAWER DEL CARRITO DE COMPRAS -->
+  <div id="cartDrawer" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-[#382417] border-l border-[#6D3C1C] p-6 flex flex-col justify-between transform translate-x-full transition-transform duration-300 id-cart-panel">
+      
+      <div>
+        <div class="flex items-center justify-between border-b border-[#6D3C1C] pb-4 mb-4">
+          <div class="flex items-center gap-2">
+            <i data-lucide="shopping-bag" class="w-6 h-6 text-[#C57938]"></i>
+            <h3 class="text-xl font-bold text-[#FFFFFF]">Resumen del Pedido</h3>
+          </div>
+          <button onclick="toggleCart()" class="p-1 hover:bg-[#6D3C1C] rounded-lg text-[#E7C196]">
+            <i data-lucide="x" class="w-6 h-6"></i>
+          </button>
+        </div>
+
+        <div id="cartItemsList" class="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+          <!-- Ítems agregados -->
+        </div>
+      </div>
+
+      <div class="border-t border-[#6D3C1C] pt-4 mt-auto">
+        <div class="flex justify-between items-center mb-4 text-lg font-bold text-[#FFFFFF]">
+          <span>Total a Pagar</span>
+          <span id="cartTotal" class="text-2xl text-[#C57938] font-extrabold">$ 0 ARS</span>
+        </div>
+
+        <button onclick="checkout()" class="w-full btn-miel py-3.5 rounded-xl font-extrabold text-base shadow-lg">
+          Confirmar Pedido
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SCRIPT CON DATOS Y LÓGICA DE INTERACCIÓN -->
+  <script>
+    const menuData = [
+      // --- CAFETERÍA (CAFÉS & BEBIDAS) ---
+      { id: "caf-1", name: "Espresso", mainSection: "cafeteria", subCategory: "bebidas", categoryLabel: "Cafetería", badge: "Clásico Porteño", description: "Extracción concentrada de granos seleccionados con crema densa.", price: 3000, icon: "coffee" },
+      { id: "caf-2", name: "Latte", mainSection: "cafeteria", subCategory: "bebidas", categoryLabel: "Cafetería", badge: "Especialidad", description: "Espresso equilibrado con leche suavemente cremada al vapor.", price: 3500, icon: "coffee" },
+      { id: "caf-3", name: "Americano", mainSection: "cafeteria", subCategory: "bebidas", categoryLabel: "Cafetería", badge: "Suave", description: "Café espresso doble diluido con agua caliente.", price: 3500, icon: "coffee" },
+      { id: "caf-4", name: "Macchiato", mainSection: "cafeteria", subCategory: "bebidas", categoryLabel: "Cafetería", badge: "Intenso", description: "Espresso corto manchado con una capa de espuma de leche.", price: 4500, icon: "coffee" },
+      { id: "caf-5", name: "Flat White", mainSection: "cafeteria", subCategory: "bebidas", categoryLabel: "Cafetería", badge: "Favorito", description: "Doble shot de espresso con microespuma aterciopelada.", price: 4500, icon: "coffee" },
+      { id: "caf-6", name: "Submarino Tradicional", mainSection: "cafeteria", subCategory: "bebidas", categoryLabel: "Cafetería", badge: "Clásico Porteño", description: "Barra de chocolate semi-amargo derretida en leche caliente.", price: 3900, icon: "coffee" },
+
+      // --- CAFETERÍA (TORTAS & PASTELES) ---
+      { id: "rep-1", name: "Medialuna de Manteca", mainSection: "cafeteria", subCategory: "reposteria", categoryLabel: "Tortas & Pasteles", badge: "Tradicional", description: "Masa hojaldrada artesanal con baño de almíbar.", price: 2000, icon: "cake" },
+      { id: "rep-2", name: "Muffin Artesanal", mainSection: "cafeteria", subCategory: "reposteria", categoryLabel: "Tortas & Pasteles", badge: "Horneado del Día", description: "Bizcochuelo húmedo con chips de chocolate.", price: 2500, icon: "cake" },
+      { id: "rep-3", name: "Dona Glaseada", mainSection: "cafeteria", subCategory: "reposteria", categoryLabel: "Tortas & Pasteles", badge: "Dulce", description: "Masa esponjosa cubierta con glasé tradicional.", price: 3500, icon: "cake" },
+      { id: "rep-4", name: "Porción de Torta Rogel", mainSection: "cafeteria", subCategory: "reposteria", categoryLabel: "Tortas & Pasteles", badge: "Pastelería", description: "Capas crujientes de hojaldre con abundante dulce de leche.", price: 4500, icon: "cake" },
+      { id: "rep-5", name: "Porción Tarta de Ricota", mainSection: "cafeteria", subCategory: "reposteria", categoryLabel: "Tortas & Pasteles", badge: "Casera", description: "Relleno suave de ricota artesanal y vainilla.", price: 4500, icon: "cake" },
+      { id: "rep-6", name: "Brownie con Nueces", mainSection: "cafeteria", subCategory: "reposteria", categoryLabel: "Tortas & Pasteles", badge: "Favorito", description: "Bizcocho húmedo de chocolate con nueces crocantes.", price: 4000, icon: "cake" },
+      { id: "rep-7", name: "Alfajor Artesanal DDL", mainSection: "cafeteria", subCategory: "reposteria", categoryLabel: "Tortas & Pasteles", badge: "Dulce", description: "Masa suave rellena de dulce de leche colonial.", price: 2200, icon: "cake" },
+      { id: "rep-8", name: "Churro Casero (Unidad)", mainSection: "cafeteria", subCategory: "reposteria", categoryLabel: "Tortas & Pasteles", badge: "Fresco", description: "Churro crujiente relleno con dulce de leche.", price: 1500, icon: "cake" },
+
+      // --- CAFETERÍA (SMOOTHIES) ---
+      { id: "smo-1", name: "Smoothie de Fresa", mainSection: "cafeteria", subCategory: "smoothies", categoryLabel: "Smoothies", badge: "Refrescante", description: "Batido natural de frutillas frescas procesadas con hielo.", price: 2000, icon: "glass-water" },
+      { id: "smo-2", name: "Smoothie de Mango", mainSection: "cafeteria", subCategory: "smoothies", categoryLabel: "Smoothies", badge: "Tropical", description: "Pulpa de mango tropical licuada con bebida vegetal.", price: 2500, icon: "glass-water" },
+      { id: "smo-3", name: "Smoothie Matcha", mainSection: "cafeteria", subCategory: "smoothies", categoryLabel: "Smoothies", badge: "Saludable", description: "Té matcha ceremonial batido con leche de almendras.", price: 3500, icon: "glass-water" },
+
+      // --- CAFETERÍA (SALADOS) ---
+      { id: "sal-1", name: "Tostado Carlitos Miga", mainSection: "cafeteria", subCategory: "salados", categoryLabel: "Salados", badge: "Favorito", description: "Pan de miga tostado con jamón cocido y abundante queso.", price: 4500, icon: "utensils" },
+      { id: "sal-2", name: "Porción de Chipá (3u)", mainSection: "cafeteria", subCategory: "salados", categoryLabel: "Salados", badge: "Sin TACC", description: "Panecillos de fécula de mandioca y queso horneados.", price: 2000, icon: "utensils" },
+      { id: "sal-3", name: "Leche de Almendras", mainSection: "cafeteria", subCategory: "salados", categoryLabel: "Extras", badge: "Adicional", description: "Sustitución de leche vacuna por bebida de almendras.", price: 500, icon: "utensils" },
+
+      // --- TALLERES DE ARTE ---
+      { id: "tal-1", name: "Sesión Cerámica en Torno", mainSection: "talleres", subCategory: "arte", categoryLabel: "Talleres", badge: "Reserva", description: "Uso de torno cerámico por 1h 30m con arcilla incluida.", price: 12000, icon: "palette" },
+      { id: "tal-2", name: "Set Pintura y Dibujo Libre", mainSection: "talleres", subCategory: "arte", categoryLabel: "Talleres", badge: "Experiencia", description: "Atril, lienzo y materiales para crear consumiendo.", price: 8500, icon: "palette" },
+
+      // --- BIBLIOTECA ---
+      { id: "bib-1", name: "Lectura en Sala de Clásicos", mainSection: "biblioteca", subCategory: "libros", categoryLabel: "Biblioteca", badge: "Libre", description: "Acceso libre al catálogo de novelas físicas en mesa.", price: 0, icon: "book-open" },
+      { id: "bib-2", name: "Membresía Mensual Lectura", mainSection: "biblioteca", subCategory: "libros", categoryLabel: "Biblioteca", badge: "Suscripción", description: "Préstamo a domicilio de hasta 3 libros en simultáneo.", price: 6500, icon: "book-open" },
+
+      // --- CINE CLÁSICO (CARTELERA EXPANDIDA CON HORARIOS) ---
+      { 
+        id: "cin-1", 
+        name: "Orgullo y Prejuicio (1940)", 
+        mainSection: "cine", 
+        subCategory: "peliculas", 
+        categoryLabel: "Cine Clásico", 
+        badge: "Novela Romántica", 
+        description: "Basada en la célebre obra de Jane Austen. Incluye reserva de asiento en minisala + copa de cortesía.", 
+        schedule: "Miércoles y Viernes — 18:00 y 20:30 hs",
+        price: 5000, 
+        icon: "film" 
+      },
+      { 
+        id: "cin-2", 
+        name: "El Gran Gatsby (1974)", 
+        mainSection: "cine", 
+        subCategory: "peliculas", 
+        categoryLabel: "Cine Clásico", 
+        badge: "Drama Clásico", 
+        description: "Adaptación de la obra maestra de F. Scott Fitzgerald sobre los locos años veinte en Long Island.", 
+        schedule: "Jueves y Sábados — 19:00 y 21:30 hs",
+        price: 5000, 
+        icon: "film" 
+      },
+      { 
+        id: "cin-3", 
+        name: "1984 (1984)", 
+        mainSection: "cine", 
+        subCategory: "peliculas", 
+        categoryLabel: "Cine Clásico", 
+        badge: "Distopía Literaria", 
+        description: "Inspirada en la novela profética de George Orwell. Función especial con debate literario posterior.", 
+        schedule: "Martes y Domingos — 18:30 y 21:00 hs",
+        price: 5000, 
+        icon: "film" 
+      },
+      { 
+        id: "cin-4", 
+        name: "Drácula de Bram Stoker (1992)", 
+        mainSection: "cine", 
+        subCategory: "peliculas", 
+        categoryLabel: "Cine Clásico", 
+        badge: "Gótico / Terror", 
+        description: "La magistral adaptación gótica del clásico de terror epistolar escrito por Bram Stoker.", 
+        schedule: "Viernes y Sábados — 23:00 hs (Función Trasnoche)",
+        price: 5500, 
+        icon: "film" 
+      },
+      { 
+        id: "cin-5", 
+        name: "Mujercitas (1949)", 
+        mainSection: "cine", 
+        subCategory: "peliculas", 
+        categoryLabel: "Cine Clásico", 
+        badge: "Clásico Familiar", 
+        description: "Inspirada en el tierno e inolvidable relato autobiográfico de Louisa May Alcott.", 
+        schedule: "Miércoles y Domingos — 15:30 hs (Función Vespertina)",
+        price: 4500, 
+        icon: "film" 
+      }
+    ];
+
+    let cart = [];
+    let currentMainSection = 'todos';
+    let currentSubCategory = 'todos';
+
+    function renderProducts(items) {
+      const grid = document.getElementById('productsGrid');
+      const count = document.getElementById('itemCount');
+      const banner = document.getElementById('homeBanner');
+      grid.innerHTML = '';
+      count.textContent = `${items.length} Opciones`;
+
+      if (currentMainSection === 'todos' && !document.getElementById('searchInput').value) {
+        banner.classList.remove('hidden');
+      } else {
+        banner.classList.add('hidden');
+      }
+
+      if (items.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-12 text-center text-[#E7C196]/60">
+            <i data-lucide="search-x" class="w-12 h-12 mx-auto mb-2 text-[#C57938]"></i>
+            <p>No se encontraron productos en esta categoría.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      if (currentMainSection === 'cafeteria') {
+        // --- Renderizado como Lista Ordenada para Cafetería ---
+        grid.classList.remove('grid', 'grid-cols-1', 'sm:grid-cols-2', 'lg:grid-cols-3', 'gap-6');
+        grid.classList.add('space-y-8');
+
+        const subCatNames = {
+          'bebidas': 'Cafés & Bebidas',
+          'reposteria': 'Tortas & Pasteles',
+          'smoothies': 'Smoothies',
+          'salados': 'Salados & Extras'
+        };
+
+        const categoriesToRender = currentSubCategory === 'todos' 
+          ? ['bebidas', 'reposteria', 'smoothies', 'salados'] 
+          : [currentSubCategory];
+
+        categoriesToRender.forEach(subCatKey => {
+          const catItems = items.filter(item => item.subCategory === subCatKey);
+          if (catItems.length === 0) return;
+
+          const catHeader = document.createElement('h3');
+          catHeader.className = "text-xl font-bold text-[#FFFFFF] border-b border-[#6D3C1C] pb-2 flex items-center gap-2";
+          catHeader.innerHTML = `<span class="w-3 h-3 rounded-full bg-[#C57938] inline-block"></span> ${subCatNames[subCatKey]}`;
+          grid.appendChild(catHeader);
+
+          const listContainer = document.createElement('ol');
+          listContainer.className = "space-y-3 list-decimal list-inside pl-2";
+
+          catItems.forEach(item => {
+            const listItem = document.createElement('li');
+            listItem.className = "text-[#E7C196] border-b border-[#6D3C1C]/40 pb-3 bg-[#6D3C1C]/20 p-3 rounded-xl";
+
+            const priceText = item.price === 0 ? "GRATIS" : `$ ${item.price.toLocaleString('es-AR')} ARS`;
+
+            listItem.innerHTML = `
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 ml-2">
+                <div>
+                  <span class="font-bold text-lg text-[#FFFFFF]">${item.name}</span>
+                  <span class="text-xs bg-[#382417] text-[#C57938] px-2 py-0.5 rounded-full border border-[#C57938] ml-2 font-semibold">${item.badge}</span>
+                  <p class="text-xs text-[#E7C196] leading-relaxed mt-1">${item.description}</p>
+                </div>
+                <div class="flex items-center gap-4 flex-shrink-0">
+                  <span class="text-base font-extrabold text-[#FFFFFF]">${priceText}</span>
+                  <button onclick="addToCart('${item.id}')" class="btn-miel text-xs px-3.5 py-2 rounded-lg flex items-center gap-1.5 shadow-md">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    <span>Agregar</span>
+                  </button>
+                </div>
+              </div>
+            `;
+            listContainer.appendChild(listItem);
+          });
+          grid.appendChild(listContainer);
+        });
+
+      } else if (currentMainSection === 'cine') {
+        // --- Renderizado Especial tipo Cartelera de Cine para Cine Clásico ---
+        grid.classList.add('grid', 'grid-cols-1', 'sm:grid-cols-2', 'lg:grid-cols-3', 'gap-6');
+        grid.classList.remove('space-y-8');
+
+        items.forEach(item => {
+          const card = document.createElement('div');
+          card.className = "card-item rounded-2xl p-5 flex flex-col justify-between h-full border-2 border-[#C57938]/40";
+          
+          const priceText = `$ ${item.price.toLocaleString('es-AR')} ARS`;
+
+          card.innerHTML = `
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="bg-[#382417] text-[#C57938] border border-[#C57938] text-xs px-2.5 py-1 rounded-full font-bold uppercase tracking-wider">
+                   ${item.badge}
+                </span>
+                <div class="w-8 h-8 rounded-full bg-[#382417] flex items-center justify-center text-[#C57938]">
+                  <i data-lucide="film" class="w-4 h-4"></i>
+                </div>
+              </div>
+              <h4 class="text-xl font-extrabold text-[#FFFFFF] mb-2">${item.name}</h4>
+              <p class="text-xs text-[#E7C196] leading-relaxed mb-4">${item.description}</p>
+              
+              <!-- Horarios de función destacados -->
+              <div class="bg-[#382417]/80 border border-[#C57938]/50 p-3 rounded-xl mb-4">
+                <div class="flex items-center gap-2 text-xs font-bold text-[#FFFFFF] mb-1">
+                  <i data-lucide="clock" class="w-4 h-4 text-[#C57938]"></i>
+                  <span>Horarios de Función:</span>
+                </div>
+                <p class="text-xs text-[#E7C196] font-medium pl-6">${item.schedule}</p>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-[#382417] flex items-center justify-between mt-auto">
+              <div>
+                <span class="text-xs text-[#E7C196]/80 block">Entrada / Reserva</span>
+                <span class="text-lg font-extrabold text-[#FFFFFF]">${priceText}</span>
+              </div>
+              <button onclick="addToCart('${item.id}')" class="btn-miel text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-md">
+                <i data-lucide="ticket" class="w-4 h-4"></i>
+                <span>Reservar Asiento</span>
+              </button>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+
+      } else {
+        // --- Renderizado en Grilla para otras secciones ---
+        grid.classList.add('grid', 'grid-cols-1', 'sm:grid-cols-2', 'lg:grid-cols-3', 'gap-6');
+        grid.classList.remove('space-y-8');
+
+        items.forEach(item => {
+          const card = document.createElement('div');
+          card.className = "card-item rounded-2xl p-5 flex flex-col justify-between h-full";
+          
+          const priceText = item.price === 0 ? "GRATIS" : `$ ${item.price.toLocaleString('es-AR')} ARS`;
+
+          card.innerHTML = `
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="bg-[#382417] text-[#C57938] border border-[#C57938] text-xs px-2.5 py-0.5 rounded-full font-bold">
+                  ${item.badge}
+                </span>
+                <div class="w-8 h-8 rounded-full bg-[#382417] flex items-center justify-center text-[#C57938]">
+                  <i data-lucide="${item.icon}" class="w-4 h-4"></i>
+                </div>
+              </div>
+              <span class="text-xs text-[#C57938] font-bold uppercase tracking-wider">${item.categoryLabel}</span>
+              <h4 class="text-lg font-bold text-[#FFFFFF] mt-0.5 mb-2">${item.name}</h4>
+              <p class="text-xs text-[#E7C196] leading-relaxed mb-4">${item.description}</p>
+            </div>
+
+            <div class="pt-3 border-t border-[#382417] flex items-center justify-between mt-auto">
+              <span class="text-lg font-extrabold text-[#FFFFFF]">${priceText}</span>
+              <button onclick="addToCart('${item.id}')" class="btn-miel text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 shadow-md">
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                <span>Agregar</span>
+              </button>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      }
+
+      lucide.createIcons();
+    }
+
+    function selectSection(section, element) {
+      currentMainSection = section;
+      currentSubCategory = 'todos';
+      
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      if(element) element.classList.add('active');
+
+      const titleMap = {
+        'todos': 'Inicio / Bienvenidos a LibreArt',
+        'cafeteria': 'Menú de Cafetería & Gastronomía',
+        'talleres': 'Talleres de Arte & Cerámica',
+        'biblioteca': 'Biblioteca & Lectura en Sala',
+        'cine': 'Cartelera de Cine Clásico & Literario'
+      };
+
+      const subMap = {
+        'todos': 'Conocé nuestra propuesta cultural, gastronómica y todas nuestras especialidades.',
+        'cafeteria': 'Listado de cafés, tortas, smoothies y salados divididos por categoría.',
+        'talleres': 'Espacios creativos de modelado en barro y dibujo libre.',
+        'biblioteca': 'Préstamo libre de títulos literarios para disfrutar en mesa.',
+        'cine': 'Películas clásicas basadas en grandes obras literarias con sus horarios de función.'
+      };
+
+      document.getElementById('sectionTitle').textContent = titleMap[section] || 'LibreArt';
+      document.getElementById('sectionSub').textContent = subMap[section] || '';
+
+      const subContainer = document.getElementById('subFilterContainer');
+      if (section === 'cafeteria') {
+        subContainer.classList.remove('hidden');
+        resetSubfilterButtons();
+      } else {
+        subContainer.classList.add('hidden');
+      }
+
+      if (section === 'todos') {
+        renderProducts(menuData);
+      } else {
+        renderProducts(menuData.filter(i => i.mainSection === section));
+      }
+    }
+
+    function filterSubCategory(subCat) {
+      currentSubCategory = subCat;
+
+      document.querySelectorAll('.subfilter-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+
+      let filtered = menuData.filter(i => i.mainSection === 'cafeteria');
+      if (subCat !== 'todos') {
+        filtered = filtered.filter(i => i.subCategory === subCat);
+      }
+      renderProducts(filtered);
+    }
+
+    function resetSubfilterButtons() {
+      document.querySelectorAll('.subfilter-btn').forEach((btn, idx) => {
+        if(idx === 0) btn.classList.add('active');
+        else btn.classList.remove('active');
+      });
+    }
+
+    function handleSearch(term) {
+      const cleanTerm = term.toLowerCase().trim();
+      if (!cleanTerm) {
+        selectSection(currentMainSection, null);
+        return;
+      }
+
+      const results = menuData.filter(i => 
+        i.name.toLowerCase().includes(cleanTerm) ||
+        i.description.toLowerCase().includes(cleanTerm) ||
+        i.categoryLabel.toLowerCase().includes(cleanTerm) ||
+        (i.schedule && i.schedule.toLowerCase().includes(cleanTerm))
+      );
+
+      document.getElementById('sectionTitle').textContent = `Búsqueda: "${term}"`;
+      document.getElementById('subFilterContainer').classList.add('hidden');
+      document.getElementById('homeBanner').classList.add('hidden');
+      renderProducts(results);
+    }
+
+    function addToCart(id) {
+      const item = menuData.find(i => i.id === id);
+      if (!item) return;
+
+      const existing = cart.find(c => c.id === id);
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        cart.push({ ...item, quantity: 1 });
+      }
+
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      const badge = document.getElementById('cartBadge');
+      const list = document.getElementById('cartItemsList');
+      const totalEl = document.getElementById('cartTotal');
+
+      const totalItems = cart.reduce((sum, i) => sum + i.quantity, 0);
+      const totalPrice = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+
+      badge.textContent = totalItems;
+      totalEl.textContent = `$ ${totalPrice.toLocaleString('es-AR')} ARS`;
+
+      if (cart.length === 0) {
+        list.innerHTML = `<p class="text-center text-sm text-[#E7C196]/60 py-8">El carrito está vacío.</p>`;
+      } else {
+        list.innerHTML = cart.map(item => `
+          <div class="flex items-center justify-between bg-[#6D3C1C]/40 p-3 rounded-xl border border-[#6D3C1C]">
+            <div>
+              <h5 class="text-sm font-bold text-[#FFFFFF]">${item.name}</h5>
+              <span class="text-xs text-[#C57938] font-bold">$ ${(item.price * item.quantity).toLocaleString('es-AR')} ARS</span>
+            </div>
+            <div class="flex items-center gap-2 bg-[#382417] px-2.5 py-1 rounded-lg border border-[#6D3C1C]">
+              <button onclick="changeQty('${item.id}', -1)" class="text-[#E7C196] hover:text-[#FFFFFF] font-bold px-1">-</button>
+              <span class="text-xs font-bold text-[#FFFFFF] w-4 text-center">${item.quantity}</span>
+              <button onclick="changeQty('${item.id}', 1)" class="text-[#E7C196] hover:text-[#FFFFFF] font-bold px-1">+</button>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function changeQty(id, delta) {
+      const item = cart.find(c => c.id === id);
+      if (!item) return;
+
+      item.quantity += delta;
+      if (item.quantity <= 0) {
+        cart = cart.filter(c => c.id !== id);
+      }
+      updateCartUI();
+    }
+
+    function toggleCart() {
+      const drawer = document.getElementById('cartDrawer');
+      const panel = drawer.querySelector('.id-cart-panel');
+
+      if (drawer.classList.contains('pointer-events-none')) {
+        drawer.classList.remove('pointer-events-none', 'opacity-0');
+        panel.classList.remove('translate-x-full');
+      } else {
+        drawer.classList.add('opacity-0', 'pointer-events-none');
+        panel.classList.add('translate-x-full');
+      }
+    }
+
+    function checkout() {
+      if (cart.length === 0) return alert("Tu carrito está vacío.");
+      const total = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+      alert(`¡Pedido confirmado en LibreArt!\nTotal: $ ${total.toLocaleString('es-AR')} ARS.`);
+      cart = [];
+      updateCartUI();
+      toggleCart();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderProducts(menuData);
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>
