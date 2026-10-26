@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Museo de Retratos | Páginas Abiertas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:#eee2cd;
+  background:
+    radial-gradient(ellipse 80% 40% at 50% 0%, rgba(255,214,140,.20), transparent 70%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.018) 0 2px, transparent 2px 46px),
+    linear-gradient(180deg,#3b2814 0%,#2a1b0c 55%,#170e06 100%);
+  background-attachment:fixed}
+header{position:sticky;top:0;z-index:20;background:rgba(45,30,14,.85);backdrop-filter:blur(6px);border-bottom:1px solid rgba(107,77,39,.6)}
+.bar{max-width:1280px;margin:0 auto;padding:16px 24px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
+h1{font-family:'Lora',serif;font-size:26px;font-weight:700;color:#fde9b8;line-height:1.15}
+.sub{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:#e1cca8;margin-top:3px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.museum-tab{cursor:pointer;padding:8px 16px;border-radius:999px;font:700 12px 'Plus Jakarta Sans',sans-serif;color:#e1cca8;background:rgba(255,255,255,.06);border:1px solid rgba(225,204,168,.25);transition:.2s}
+.museum-tab:hover{background:rgba(255,255,255,.12)}
+.museum-tab.tab-active{background:#d97706;color:#fff;border-color:#f6b24a;box-shadow:0 4px 14px rgba(217,119,6,.4)}
+main{max-width:1280px;margin:0 auto;padding:40px 24px 30px}
+.intro{text-align:center;max-width:640px;margin:0 auto 40px}
+#wingIntro{font-size:14px;font-style:italic;line-height:1.6;color:#eee2cd}
+#count{font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:#b8925f;margin-top:8px}
+#museumGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:48px 28px}
+.portrait-card{position:relative;display:flex;flex-direction:column;align-items:center;cursor:pointer;transition:transform .3s;animation:up .6s ease both}
+.portrait-card:hover{transform:translateY(-6px) scale(1.02)}
+.portrait-card .spot{position:absolute;top:-26px;left:50%;width:120%;height:70%;transform:translateX(-50%);background:radial-gradient(ellipse at 50% 0%,rgba(255,224,160,.28),transparent 70%);pointer-events:none;opacity:.55;transition:opacity .3s}
+.portrait-card:hover .spot{opacity:1}
+.gold-frame{position:relative;width:100%;padding:10px;background:linear-gradient(135deg,#f6dc8c 0%,#b8862b 28%,#7a5416 52%,#e9c466 76%,#8a5f1c 100%);box-shadow:0 14px 30px rgba(0,0,0,.55),inset 0 0 0 2px rgba(255,240,190,.35);border-radius:3px}
+.frame-mat{padding:5px;background:#1c1209;box-shadow:inset 0 0 10px rgba(0,0,0,.8)}
+.frame-mat svg,.detail-art svg{display:block;width:100%;height:auto}
+.plaque{margin-top:14px;padding:6px 12px;max-width:92%;text-align:center;background:linear-gradient(180deg,#e9d9a8,#c7ad6a);border:1px solid #8a6a2a;border-radius:3px;box-shadow:0 3px 8px rgba(0,0,0,.4);display:flex;flex-direction:column;gap:1px}
+.plaque-title{font-family:'Lora',serif;font-weight:700;font-size:12px;color:#2d1e0e;line-height:1.25}
+.plaque-sub{font-size:10px;color:#4a3319}
+.note{text-align:center;font-size:11px;font-style:italic;color:#b8925f;margin-top:56px}
+.floor{height:14px;margin-top:30px;background:linear-gradient(180deg,#5a3a1a,#2a1a0a);box-shadow:0 -6px 18px rgba(0,0,0,.4) inset}
+/* visor de detalle */
+#portraitDetail{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.92);overflow-y:auto}
+#portraitDetail.open{display:flex}
+.nav{position:fixed;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:0;cursor:pointer;background:rgba(74,51,25,.92);color:#fff;font-size:22px;z-index:5;transition:.2s}
+.nav:hover{background:#d97706}
+.nav.prev{left:14px}.nav.next{right:14px}
+.nav.close{top:18px;right:18px;transform:none;font-size:18px}
+.detail{max-width:880px;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:center;padding:0 56px;margin:auto}
+.detail-art{padding:14px;max-width:380px;width:100%;margin:0 auto;background:linear-gradient(135deg,#f6dc8c 0%,#b8862b 28%,#7a5416 52%,#e9c466 76%,#8a5f1c 100%);box-shadow:0 20px 50px rgba(0,0,0,.6)}
+.detail-art>div{padding:6px;background:#1c1209}
+.badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:4px 12px;border-radius:999px;background:#d97706;color:#fff}
+#detailTitle{font-family:'Lora',serif;font-size:30px;line-height:1.15;color:#fde9b8;margin:14px 0 8px}
+#detailMeta{font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:#e1cca8}
+#detailStory{font-size:14px;line-height:1.7;margin-top:14px}
+#detailCounter{font:11px monospace;color:#b8925f;margin-top:16px}
+.hint{font-size:11px;color:#b8925f;margin-top:4px}
+.add-panel{max-width:760px;margin:0 auto 38px;padding:14px 18px;border:1px solid rgba(225,204,168,.25);border-radius:8px;background:rgba(20,12,6,.35)}
+.add-panel summary{cursor:pointer;color:#fde9b8;font-family:'Lora',serif;font-weight:700}
+.add-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
+.add-form label{display:flex;flex-direction:column;gap:5px;font-size:12px;color:#e1cca8}
+.add-form input,.add-form select,.add-form textarea{width:100%;padding:9px;border:1px solid rgba(225,204,168,.35);border-radius:4px;background:#1c1209;color:#eee2cd;font:inherit}
+.add-form textarea{min-height:90px;resize:vertical}
+.add-form .wide{grid-column:1/-1}
+.add-form button{justify-self:start;padding:9px 16px;border:1px solid #f6b24a;border-radius:999px;background:#d97706;color:white;font:700 13px 'Plus Jakarta Sans',sans-serif;cursor:pointer}
+.add-form button:disabled{opacity:.6;cursor:wait}
+#addStatus{min-height:1.5em;margin-top:10px;font-size:12px;color:#fde9b8}
+.frame-mat img,.detail-art img{display:block;width:100%;aspect-ratio:200/260;object-fit:cover}
+@keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@media (max-width:720px){
+  h1{font-size:21px}
+  #museumGrid{grid-template-columns:repeat(2,1fr);gap:36px 16px}
+  .detail{grid-template-columns:1fr;gap:20px;padding:56px 8px 20px}
+  .nav.prev{left:4px}.nav.next{right:4px}
+  .add-form{grid-template-columns:1fr}
+  .add-form .wide{grid-column:auto}
+}
+
+.stats{display:flex;align-items:center;gap:14px;margin-top:18px;flex-wrap:wrap}
+.likebtn{cursor:pointer;display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:999px;font:700 13px 'Plus Jakarta Sans',sans-serif;color:#fde9b8;background:rgba(255,255,255,.08);border:1px solid rgba(225,204,168,.35);transition:.2s}
+.likebtn:hover{background:rgba(255,255,255,.16)}
+.likebtn.liked{background:#c2185b;border-color:#f06a9a;color:#fff}
+.likebtn svg{width:16px;height:16px;fill:currentColor}
+.views{font-size:12px;color:#b8925f}
+.card-likes{position:absolute;top:18px;right:18px;z-index:2;display:flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;background:rgba(20,12,6,.72);color:#fde9b8;font:700 11px 'Plus Jakarta Sans',sans-serif}
+.card-likes svg{width:11px;height:11px;fill:#f06a9a}
+.estado{grid-column:1/-1;text-align:center;padding:40px 16px;font-size:14px;line-height:1.7;color:#e1cca8}
+.estado strong{display:block;font-family:'Lora',serif;font-size:20px;color:#fde9b8;margin-bottom:8px}
+.estado code{background:rgba(255,255,255,.08);padding:2px 7px;border-radius:5px;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div>
+      <h1>Museo de Retratos Páginas Abiertas</h1>
+      <p class="sub">Colección permanente · Entrada libre y café aparte</p>
+    </div>
+    <div class="tabs">
+      <button class="museum-tab tab-active" id="tab-todas" onclick="setMuseumWing('todas')">Todas las salas</button>
+      <button class="museum-tab" id="tab-realistas" onclick="setMuseumWing('realistas')">Sala I · Realistas</button>
+      <button class="museum-tab" id="tab-bizarros" onclick="setMuseumWing('bizarros')">Sala II · Bizarros</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="intro">
+    <p id="wingIntro"></p>
+    <p id="count"></p>
+  </div>
+  <details class="add-panel">
+    <summary>Agregar un retrato</summary>
+    <form id="addPortraitForm" class="add-form" enctype="multipart/form-data">
+      <input name="accion" type="hidden" value="crear">
+      <label>Sala
+        <select name="sala" required>
+          <option value="realistas">Sala I · Realistas</option>
+          <option value="bizarros">Sala II · Bizarros</option>
+        </select>
+      </label>
+      <label>Título
+        <input name="titulo" type="text" maxlength="120" required>
+      </label>
+      <label>Año
+        <input name="anio" type="number" min="1" max="9999" required>
+      </label>
+      <label>Técnica
+        <input name="tecnica" type="text" maxlength="120" required>
+      </label>
+      <label class="wide">Historia
+        <textarea name="historia" maxlength="10000" required></textarea>
+      </label>
+      <label class="wide">Imagen (PNG o JPG, hasta 5 MB)
+        <input name="imagen" type="file" accept="image/png,image/jpeg,.png,.jpg,.jpeg" required>
+      </label>
+      <button type="submit">Guardar retrato</button>
+    </form>
+    <p id="addStatus" role="status" aria-live="polite"></p>
+  </details>
+  <div id="museumGrid"></div>
+  <p class="note">Todos los retratos son obras imaginarias creadas para este museo; ningún personaje representa a una persona real.</p>
+</main>
+<div class="floor"></div>
+
+<div id="portraitDetail" role="dialog" aria-modal="true">
+  <button class="nav close" onclick="closePortraitDetail()" aria-label="Cerrar">&#10005;</button>
+  <button class="nav prev" onclick="stepPortrait(-1)" aria-label="Anterior">&#8249;</button>
+  <button class="nav next" onclick="stepPortrait(1)" aria-label="Siguiente">&#8250;</button>
+  <div class="detail">
+    <div id="detailArt" class="detail-art"></div>
+    <div>
+      <span id="detailWing" class="badge"></span>
+      <h2 id="detailTitle"></h2>
+      <p id="detailMeta"></p>
+      <p id="detailStory"></p>
+      <div class="stats">
+        <button id="likeBtn" class="likebtn" onclick="toggleLike()" aria-pressed="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.8 8.4 2.6 4.5 6.4 4.5c2 0 3.4 1.1 4.1 2.3.4.6 1.2.6 1.6 0 .7-1.2 2.1-2.3 4.1-2.3 3.8 0 5.6 3.9 4 7.3C19.5 16.4 12 21 12 21z"/></svg>
+          <span id="likeLabel">Me gusta</span> · <span id="likeCount">0</span>
+        </button>
+        <span class="views" id="viewCount"></span>
+      </div>
+      <p id="detailCounter"></p>
+      <p class="hint">Flechas del teclado para recorrer la sala · Esc para salir.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+function shade(hex, amt) {
+            const n = parseInt(hex.slice(1), 16);
+            const ch = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map(v => {
+                const r = amt < 0 ? v * (1 + amt) : v + (255 - v) * amt;
+                return Math.max(0, Math.min(255, Math.round(r)));
+            });
+            return '#' + ch.map(x => x.toString(16).padStart(2, '0')).join('');
+        }
+
+        function wrapPortraitSVG(p, uid, body) {
+            return `<svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${p.title}">
+                <defs>
+                    <linearGradient id="bg${uid}" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0" stop-color="${p.bg[0]}"/><stop offset="1" stop-color="${p.bg[1]}"/>
+                    </linearGradient>
+                    <radialGradient id="vg${uid}" cx="50%" cy="42%" r="72%">
+                        <stop offset="0.5" stop-color="#000" stop-opacity="0"/>
+                        <stop offset="1" stop-color="#000" stop-opacity="0.55"/>
+                    </radialGradient>
+                    <linearGradient id="fs${uid}" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0" stop-color="#fff" stop-opacity="0.14"/>
+                        <stop offset="0.55" stop-color="#fff" stop-opacity="0"/>
+                        <stop offset="1" stop-color="#000" stop-opacity="0.28"/>
+                    </linearGradient>
+                </defs>
+                <rect width="200" height="260" fill="url(#bg${uid})"/>
+                ${body}
+                <rect width="200" height="260" fill="url(#vg${uid})"/>
+            </svg>`;
+        }
+
+        function realisticSVG(p, uid) {
+            const sk = p.skin, skd = shade(sk, -0.22);
+            const hc = p.hairColor, hcd = shade(hc, -0.25);
+            const cap = `<path d="M59 118 C 55 62, 145 62, 141 118 C 134 92, 112 84, 100 84 C 88 84, 66 92, 59 118 Z" fill="${hc}"/>`;
+            let back = '', front = '';
+
+            switch (p.hair) {
+                case 'bun':
+                    back = `<circle cx="100" cy="58" r="17" fill="${hc}"/><circle cx="100" cy="58" r="17" fill="none" stroke="${hcd}" stroke-width="2"/>`;
+                    front = cap;
+                    break;
+                case 'long':
+                    back = `<path d="M54 120 C 48 60, 152 60, 146 120 C 150 170, 156 200, 150 232 L 50 232 C 44 200, 50 170, 54 120 Z" fill="${hc}"/>`;
+                    front = cap;
+                    break;
+                case 'curly': {
+                    let c = '';
+                    for (let a = 180; a <= 360; a += 18) {
+                        const r = a * Math.PI / 180;
+                        c += `<circle cx="${(100 + 46 * Math.cos(r)).toFixed(1)}" cy="${(112 + 54 * Math.sin(r)).toFixed(1)}" r="14" fill="${hc}"/>`;
+                    }
+                    c += `<circle cx="56" cy="130" r="12" fill="${hc}"/><circle cx="144" cy="130" r="12" fill="${hc}"/><circle cx="54" cy="150" r="11" fill="${hc}"/><circle cx="146" cy="150" r="11" fill="${hc}"/>`;
+                    back = c;
+                    front = `<path d="M62 110 C 60 76, 140 76, 138 110 C 128 94, 72 94, 62 110 Z" fill="${hc}"/>`;
+                    break;
+                }
+                case 'tufts':
+                    front = `<ellipse cx="60" cy="118" rx="7" ry="16" fill="${hc}"/><ellipse cx="140" cy="118" rx="7" ry="16" fill="${hc}"/>`;
+                    break;
+                case 'braids': {
+                    let b = '';
+                    for (let i = 0; i < 5; i++) {
+                        b += `<circle cx="${54 - i * 0.5}" cy="${150 + i * 14}" r="${8 - i * 0.4}" fill="${hc}" stroke="${hcd}" stroke-width="1"/>`;
+                        b += `<circle cx="${146 + i * 0.5}" cy="${150 + i * 14}" r="${8 - i * 0.4}" fill="${hc}" stroke="${hcd}" stroke-width="1"/>`;
+                    }
+                    b += `<circle cx="52" cy="216" r="5" fill="${p.ribbon || '#d9456b'}"/><circle cx="148" cy="216" r="5" fill="${p.ribbon || '#d9456b'}"/>`;
+                    front = cap + b;
+                    break;
+                }
+            }
+
+            // Ropa y cuello
+            let collar = '';
+            const col = p.collar || {};
+            if (col.type === 'shirt') {
+                collar = `<path d="M80 198 L100 226 L120 198 L112 191 L100 204 L88 191 Z" fill="${col.color}"/>`;
+            } else if (col.type === 'round') {
+                collar = `<path d="M76 199 Q100 236 124 199 Q100 205 76 199 Z" fill="${skd}"/>`;
+            } else if (col.type === 'scarf') {
+                collar = `<path d="M70 196 Q100 224 130 196 L136 214 Q100 242 64 214 Z" fill="${col.color}"/><circle cx="100" cy="222" r="8" fill="${shade(col.color, -0.2)}"/>`;
+            } else if (col.type === 'poncho') {
+                collar = `<path d="M24 236 H176 M28 246 H172 M34 226 H166" stroke="${col.color}" stroke-width="5" opacity=".85"/><path d="M84 198 L100 218 L116 198 Z" fill="${shade(p.cloth, -0.4)}"/>`;
+            }
+
+            // Cara
+            const eyes = [82, 118].map(x =>
+                `<ellipse cx="${x}" cy="118" rx="8.5" ry="4.8" fill="#f6f1e6"/>
+                 <circle cx="${x}" cy="118" r="3.8" fill="${p.eye}"/>
+                 <circle cx="${x}" cy="118" r="1.8" fill="#111"/>
+                 <circle cx="${x + 1.2}" cy="116.8" r="0.8" fill="#fff"/>
+                 <path d="M${x - 9} 117 Q${x} 111 ${x + 9} 117" stroke="${skd}" stroke-width="1.4" fill="none"/>`
+            ).join('');
+            const browColor = p.hat ? hcd : (p.hair === 'tufts' ? shade(hc, -0.35) : hcd);
+            const brows = `<path d="M72 106 Q82 101 92 105" stroke="${browColor}" stroke-width="3" fill="none" stroke-linecap="round"/>
+                           <path d="M108 105 Q118 101 128 106" stroke="${browColor}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+            const nose = `<path d="M100 120 C 97 134, 93 140, 96 144 Q100 146 104 144 C 107 140, 103 134, 100 120" stroke="${skd}" stroke-width="1.6" fill="${shade(sk, -0.06)}" opacity=".9"/>`;
+            const mouth = p.mouth === 'smile'
+                ? `<path d="M86 156 Q100 167 114 156" stroke="#7d2f2f" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M91 158 Q100 163 109 158 Q100 161 91 158 Z" fill="#b34a4a"/>`
+                : `<path d="M90 158 Q100 160 110 158" stroke="#7d2f2f" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M92 158.5 Q100 164 108 158.5 Z" fill="#a84444"/>`;
+            const blush = `<ellipse cx="72" cy="140" rx="8" ry="5" fill="#e0707a" opacity=".22"/><ellipse cx="128" cy="140" rx="8" ry="5" fill="#e0707a" opacity=".22"/>`;
+            const wrinkles = p.age ? `<g stroke="${skd}" stroke-width="1.2" fill="none" opacity="${(0.25 + p.age * 0.35).toFixed(2)}" stroke-linecap="round">
+                    <path d="M78 94 Q100 89 122 94"/><path d="M80 99 Q100 95 120 99"/>
+                    <path d="M69 118 l-5 -2 M69 122 l-5 1 M131 118 l5 -2 M131 122 l5 1"/>
+                    <path d="M84 150 Q82 156 86 162 M116 150 Q118 156 114 162"/>
+                </g>` : '';
+            const glasses = p.glasses ? `<g stroke="#2a1a0a" stroke-width="2" fill="rgba(255,255,255,0.08)"><circle cx="82" cy="118" r="12"/><circle cx="118" cy="118" r="12"/><path d="M94 118 H106 M70 118 H60 M130 118 H140"/></g><path d="M72 111 Q76 108 82 108" stroke="#fff" stroke-width="1.4" fill="none" opacity=".5"/>` : '';
+            const beard = p.beard ? `<path d="M62 130 C 62 176, 90 192, 100 192 C 110 192, 138 176, 138 130 C 132 152, 120 161, 100 161 C 80 161, 68 152, 62 130 Z" fill="${hc}"/>` : '';
+            const mustache = (p.mustache || p.beard) ? `<path d="M84 151 Q92 144 100 149 Q108 144 116 151 Q108 157 100 154 Q92 157 84 151 Z" fill="${hc}"/>` : '';
+            const hat = p.hat ? `<ellipse cx="100" cy="86" rx="68" ry="12" fill="${p.hat}"/>
+                    <path d="M66 86 C 66 54, 134 54, 134 86 Z" fill="${p.hat}"/>
+                    <path d="M66 82 H134" stroke="#a5352b" stroke-width="5"/>
+                    <ellipse cx="100" cy="94" rx="44" ry="8" fill="#000" opacity=".2"/>` : '';
+
+            const body = `
+                ${back}
+                <path d="M16 260 C 20 214, 58 196, 100 196 C 142 196, 180 214, 184 260 Z" fill="${p.cloth}"/>
+                ${collar}
+                <path d="M84 160 V196 Q100 210 116 196 V160 Z" fill="${skd}"/>
+                <ellipse cx="59" cy="124" rx="6.5" ry="11" fill="${skd}"/><ellipse cx="141" cy="124" rx="6.5" ry="11" fill="${skd}"/>
+                <ellipse cx="100" cy="120" rx="40" ry="50" fill="${sk}"/>
+                <ellipse cx="100" cy="120" rx="40" ry="50" fill="url(#fs${uid})"/>
+                ${blush}${eyes}${brows}${nose}${wrinkles}${beard}${mustache}${mouth}${glasses}
+                ${front}
+                ${hat}
+            `;
+            return wrapPortraitSVG(p, uid, body);
+        }
+
+        function bizarreSVG(p, uid) {
+            const shoulders = (c) => `<path d="M16 260 C 20 214, 58 196, 100 196 C 142 196, 180 214, 184 260 Z" fill="${c}"/>`;
+            let body = '';
+
+            switch (p.kind) {
+                case 'cyclops': {
+                    const sk = '#8fb573', skd = shade(sk, -0.25);
+                    body = `
+                        ${shoulders('#5b2a4a')}
+                        <path d="M80 198 L100 228 L120 198 L112 190 L100 204 L88 190 Z" fill="#f4ead2"/>
+                        <path d="M84 162 V198 Q100 210 116 198 V162 Z" fill="${skd}"/>
+                        <ellipse cx="56" cy="122" rx="7" ry="12" fill="${skd}"/><ellipse cx="144" cy="122" rx="7" ry="12" fill="${skd}"/>
+                        <ellipse cx="100" cy="116" rx="44" ry="52" fill="${sk}"/>
+                        <ellipse cx="100" cy="116" rx="44" ry="52" fill="url(#fs${uid})"/>
+                        <path d="M92 66 Q88 50 96 46 M100 64 Q102 46 110 44 M108 66 Q116 52 124 54" stroke="#2d1e0e" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <circle cx="100" cy="110" r="25" fill="#fffdf4" stroke="${skd}" stroke-width="2"/>
+                        <circle cx="102" cy="112" r="13" fill="#d9822b"/><circle cx="102" cy="112" r="6.5" fill="#111"/><circle cx="107" cy="107" r="3" fill="#fff"/>
+                        <path d="M70 80 Q100 62 130 80" stroke="#2d1e0e" stroke-width="5" fill="none" stroke-linecap="round"/>
+                        <circle cx="100" cy="110" r="31" fill="rgba(255,255,255,0.07)" stroke="#2a1a0a" stroke-width="3"/>
+                        <path d="M69 110 H55 M131 110 H145" stroke="#2a1a0a" stroke-width="3"/>
+                        <path d="M78 150 Q90 140 100 148 Q110 140 122 150 Q110 156 100 152 Q90 156 78 150 Z" fill="#2d1e0e"/>
+                        <path d="M80 158 Q100 184 120 158 Z" fill="#5a1d1d"/>
+                        <path d="M84 158 H116 L113 165 H87 Z" fill="#fff"/>
+                        <path d="M90 214 L100 220 L90 228 Z M110 214 L100 220 L110 228 Z" fill="#d94a4a"/><circle cx="100" cy="221" r="3.5" fill="#a52a2a"/>`;
+                    break;
+                }
+                case 'tresojos': {
+                    const sk = '#a58ac9', skd = shade(sk, -0.25), hair = '#ff7bb0';
+                    const eyeAt = (x, y, rx, ry) => `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="#fffdf4"/><circle cx="${x}" cy="${y}" r="${ry - 1}" fill="#1c8a92"/><circle cx="${x}" cy="${y}" r="${(ry - 1) / 2.2}" fill="#111"/><circle cx="${x + 1.2}" cy="${y - 1.4}" r="0.9" fill="#fff"/><path d="M${x - rx - 1} ${y - 1} Q${x} ${y - ry - 4} ${x + rx + 1} ${y - 1}" stroke="#2d1e0e" stroke-width="1.8" fill="none"/>`;
+                    let pearls = '';
+                    for (let i = 0; i <= 9; i++) {
+                        const t = i / 9, x = 70 + t * 60, y = 200 + Math.sin(t * Math.PI) * 18;
+                        pearls += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.6" fill="#fdf6e3" stroke="#d6c7a1" stroke-width="0.8"/>`;
+                    }
+                    body = `
+                        <ellipse cx="100" cy="64" rx="58" ry="46" fill="${hair}"/>
+                        <circle cx="58" cy="54" r="17" fill="${hair}"/><circle cx="142" cy="54" r="17" fill="${hair}"/><circle cx="100" cy="26" r="21" fill="${hair}"/>
+                        ${shoulders('#1f6f78')}
+                        <path d="M84 168 V198 Q100 210 116 198 V168 Z" fill="${skd}"/>
+                        <ellipse cx="100" cy="124" rx="40" ry="54" fill="${sk}"/>
+                        <ellipse cx="100" cy="124" rx="40" ry="54" fill="url(#fs${uid})"/>
+                        <path d="M62 94 Q80 66 100 72 Q120 66 138 94 Q120 78 100 82 Q80 78 62 94 Z" fill="${hair}"/>
+                        ${eyeAt(80, 128, 9, 6)}${eyeAt(120, 128, 9, 6)}${eyeAt(100, 100, 6.5, 4.8)}
+                        <path d="M98 134 Q95 146 100 148 Q105 146 102 134" stroke="${skd}" stroke-width="1.6" fill="none"/>
+                        <path d="M88 160 Q100 150 112 160 Q100 173 88 160 Z" fill="#c2185b"/>
+                        <circle cx="126" cy="150" r="1.8" fill="#2d1e0e"/>
+                        <ellipse cx="68" cy="146" rx="8" ry="5" fill="#ff7bb0" opacity=".35"/><ellipse cx="132" cy="146" rx="8" ry="5" fill="#ff7bb0" opacity=".35"/>
+                        ${pearls}`;
+                    break;
+                }
+                case 'libro': {
+                    body = `
+                        ${shoulders('#2b3a55')}
+                        <path d="M80 198 L100 226 L120 198 L112 191 L100 204 L88 191 Z" fill="#f4ead2"/>
+                        <path d="M96 202 L100 208 L104 202 L108 236 L100 244 L92 236 Z" fill="#c0392b"/>
+                        <rect x="90" y="164" width="20" height="34" fill="#e2bf94"/>
+                        <rect x="146" y="62" width="7" height="104" fill="#f4ead2"/>
+                        <path d="M148 70 H153 M148 78 H153 M148 86 H153 M148 94 H153 M148 102 H153 M148 110 H153 M148 118 H153 M148 126 H153 M148 134 H153 M148 142 H153 M148 150 H153 M148 158 H153" stroke="#cdbf98" stroke-width="1"/>
+                        <rect x="56" y="58" width="92" height="110" rx="4" fill="#9c2f2f"/>
+                        <rect x="56" y="58" width="12" height="110" rx="3" fill="#6e1d1d"/>
+                        <rect x="74" y="68" width="66" height="90" fill="none" stroke="#e1b85a" stroke-width="2"/>
+                        <rect x="84" y="76" width="46" height="3" fill="#e1b85a"/><rect x="92" y="82" width="30" height="2" fill="#e1b85a"/>
+                        <circle cx="92" cy="106" r="10" fill="#fffdf4"/><circle cx="124" cy="106" r="10" fill="#fffdf4"/>
+                        <circle cx="94" cy="107" r="4.5" fill="#111"/><circle cx="122" cy="107" r="4.5" fill="#111"/>
+                        <circle cx="92" cy="106" r="14" fill="none" stroke="#e1b85a" stroke-width="2"/><circle cx="124" cy="106" r="14" fill="none" stroke="#e1b85a" stroke-width="2"/>
+                        <path d="M106 106 H110" stroke="#e1b85a" stroke-width="2"/>
+                        <path d="M108 116 L104 132 L112 132" stroke="#e1b85a" stroke-width="2" fill="none" stroke-linejoin="round"/>
+                        <path d="M90 142 Q108 154 128 142" stroke="#e1b85a" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+                        <path d="M139 58 V192 L143 185 L147 192 V58 Z" fill="#e0a82e"/>`;
+                    break;
+                }
+                case 'taza': {
+                    let ruff = '';
+                    for (let i = 0; i < 14; i++) {
+                        const a = (i / 14) * Math.PI * 2;
+                        ruff += `<circle cx="${(100 + 40 * Math.cos(a)).toFixed(1)}" cy="${(198 + 11 * Math.sin(a)).toFixed(1)}" r="9" fill="#fdf6e3" stroke="#d6c7a1" stroke-width="1"/>`;
+                    }
+                    body = `
+                        ${shoulders('#7a3b5d')}
+                        ${ruff}
+                        <ellipse cx="100" cy="194" rx="52" ry="10" fill="#ffffff" opacity=".25"/>
+                        <path d="M142 98 C 174 94, 174 148, 140 146" fill="none" stroke="#d9c9a8" stroke-width="12"/>
+                        <path d="M142 98 C 174 94, 174 148, 140 146" fill="none" stroke="#fffaf0" stroke-width="8"/>
+                        <path d="M58 84 H142 V132 C142 162 124 180 100 180 C76 180 58 162 58 132 Z" fill="#fffaf0" stroke="#d9c9a8" stroke-width="2"/>
+                        <path d="M58 84 H142 V132 C142 162 124 180 100 180 C76 180 58 162 58 132 Z" fill="url(#fs${uid})"/>
+                        <ellipse cx="100" cy="84" rx="42" ry="9" fill="#4a2a12" stroke="#d9c9a8" stroke-width="2"/>
+                        <ellipse cx="88" cy="83" rx="16" ry="3" fill="#7a4a22" opacity=".8"/>
+                        <path d="M84 74 C 76 60, 94 54, 86 40 M100 72 C 92 56, 110 50, 102 34 M116 74 C 108 60, 126 54, 118 42" stroke="rgba(255,255,255,0.75)" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <path d="M76 122 Q84 114 92 122 M108 122 Q116 114 124 122" stroke="#4a2a12" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <ellipse cx="72" cy="138" rx="9" ry="5.5" fill="#f08a8a" opacity=".5"/><ellipse cx="128" cy="138" rx="9" ry="5.5" fill="#f08a8a" opacity=".5"/>
+                        <path d="M92 142 Q100 152 108 142" stroke="#b34a4a" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+                        <path d="M70 70 L78 54 L90 66 L100 50 L110 66 L122 54 L130 70 Z" fill="#e9c466" stroke="#a37a1c" stroke-width="1.5"/>
+                        <circle cx="78" cy="54" r="3" fill="#d94a4a"/><circle cx="100" cy="50" r="3.4" fill="#3b82c4"/><circle cx="122" cy="54" r="3" fill="#d94a4a"/>`;
+                    break;
+                }
+                case 'narizotas': {
+                    const sk = '#e8b4a0', skd = shade(sk, -0.2);
+                    let ruff = '';
+                    for (let i = 0; i < 12; i++) {
+                        const a = (i / 12) * Math.PI * 2;
+                        ruff += `<circle cx="${(100 + 38 * Math.cos(a)).toFixed(1)}" cy="${(196 + 10 * Math.sin(a)).toFixed(1)}" r="8.5" fill="#f4ead2" stroke="#cdbf98" stroke-width="1"/>`;
+                    }
+                    body = `
+                        ${shoulders('#35453b')}
+                        <rect x="86" y="164" width="28" height="32" fill="${skd}"/>
+                        ${ruff}
+                        <ellipse cx="54" cy="122" rx="13" ry="19" fill="${skd}"/><ellipse cx="146" cy="122" rx="13" ry="19" fill="${skd}"/>
+                        <ellipse cx="54" cy="122" rx="6" ry="11" fill="${shade(sk, -0.35)}" opacity=".6"/><ellipse cx="146" cy="122" rx="6" ry="11" fill="${shade(sk, -0.35)}" opacity=".6"/>
+                        <ellipse cx="100" cy="118" rx="44" ry="52" fill="${sk}"/>
+                        <ellipse cx="100" cy="118" rx="44" ry="52" fill="url(#fs${uid})"/>
+                        <path d="M80 70 Q100 56 120 70 M92 66 Q94 54 100 52" stroke="#6b4d27" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                        <path d="M70 98 Q84 88 96 98 M104 98 Q116 88 130 98" stroke="#6b4d27" stroke-width="7" fill="none" stroke-linecap="round"/>
+                        <circle cx="84" cy="108" r="6" fill="#fffdf4"/><circle cx="116" cy="108" r="6" fill="#fffdf4"/>
+                        <circle cx="85" cy="109" r="2.8" fill="#111"/><circle cx="115" cy="109" r="2.8" fill="#111"/>
+                        <ellipse cx="100" cy="136" rx="17" ry="28" fill="#e0937c"/>
+                        <ellipse cx="100" cy="136" rx="17" ry="28" fill="url(#fs${uid})"/>
+                        <ellipse cx="93" cy="158" rx="3.6" ry="4.4" fill="#5a2a22"/><ellipse cx="107" cy="158" rx="3.6" ry="4.4" fill="#5a2a22"/>
+                        <ellipse cx="94" cy="124" rx="4" ry="7" fill="#fff" opacity=".25"/>
+                        <path d="M90 168 Q100 164 110 168" stroke="#8a3b3b" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+                        <circle cx="76" cy="140" r="2" fill="#a0624e"/><circle cx="124" cy="136" r="2" fill="#a0624e"/>`;
+                    break;
+                }
+                case 'buho': {
+                    let feathers = '';
+                    for (let r = 0; r < 4; r++) {
+                        for (let c = 0; c < 5; c++) {
+                            const x = 70 + c * 15 + (r % 2) * 7, y = 176 + r * 12;
+                            feathers += `<path d="M${x - 6} ${y} q6 8 12 0" stroke="#6b4a24" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
+                        }
+                    }
+                    body = `
+                        <ellipse cx="100" cy="230" rx="76" ry="62" fill="#8a5a2b"/>
+                        <ellipse cx="100" cy="214" rx="46" ry="46" fill="#e8d3a6"/>
+                        ${feathers}
+                        <path d="M52 84 L58 50 L84 70 Z M148 84 L142 50 L116 70 Z" fill="#7a4d22"/>
+                        <ellipse cx="100" cy="112" rx="58" ry="52" fill="#9c6a38"/>
+                        <ellipse cx="100" cy="112" rx="58" ry="52" fill="url(#fs${uid})"/>
+                        <circle cx="76" cy="110" r="27" fill="#f1dfbd" stroke="#6b4a24" stroke-width="2"/>
+                        <circle cx="124" cy="110" r="27" fill="#f1dfbd" stroke="#6b4a24" stroke-width="2"/>
+                        <circle cx="76" cy="110" r="17" fill="#fff3c4" stroke="#2d1e0e" stroke-width="3"/><circle cx="124" cy="110" r="17" fill="#fff3c4" stroke="#2d1e0e" stroke-width="3"/>
+                        <circle cx="78" cy="111" r="9.5" fill="#c9791b"/><circle cx="122" cy="111" r="9.5" fill="#c9791b"/>
+                        <circle cx="78" cy="111" r="5" fill="#111"/><circle cx="122" cy="111" r="5" fill="#111"/>
+                        <circle cx="82" cy="106" r="2.4" fill="#fff"/><circle cx="126" cy="106" r="2.4" fill="#fff"/>
+                        <path d="M92 124 L108 124 L100 148 Z" fill="#e39a1d" stroke="#a96b0f" stroke-width="1.4"/>
+                        <path d="M38 62 L100 38 L162 62 L100 86 Z" fill="#1b1b1b"/>
+                        <path d="M72 76 V92 Q100 104 128 92 V76 L100 86 Z" fill="#262626"/>
+                        <path d="M100 62 L152 68 V96" stroke="#e9c466" stroke-width="2.4" fill="none"/>
+                        <rect x="148" y="94" width="8" height="14" fill="#e9c466"/>
+                        <path d="M82 178 L100 190 L82 202 Z M118 178 L100 190 L118 202 Z" fill="#c0392b"/><circle cx="100" cy="190" r="5" fill="#8f2418"/>`;
+                    break;
+                }
+                case 'cactus': {
+                    const sk = '#5f9d5a', skd = shade(sk, -0.3);
+                    let spines = '';
+                    [78, 100, 122].forEach(x => {
+                        for (let y = 82; y <= 168; y += 14) {
+                            const dx = x === 100 ? 0 : (x < 100 ? 3 : -3);
+                            spines += `<path d="M${x + dx - 3} ${y - 3} L${x + dx + 3} ${y + 3} M${x + dx - 3} ${y + 3} L${x + dx + 3} ${y - 3}" stroke="#f4ead2" stroke-width="1.4" stroke-linecap="round"/>`;
+                        }
+                    });
+                    let petals = '';
+                    for (let i = 0; i < 5; i++) {
+                        const a = (i / 5) * Math.PI * 2 - Math.PI / 2;
+                        petals += `<circle cx="${(100 + 10 * Math.cos(a)).toFixed(1)}" cy="${(60 + 10 * Math.sin(a)).toFixed(1)}" r="7.5" fill="#f06a9a"/>`;
+                    }
+                    body = `
+                        ${shoulders('#c44536')}
+                        <path d="M24 236 H176 M28 246 H172 M34 226 H166 M42 216 H158" stroke="#f1d9a0" stroke-width="4" opacity=".85"/>
+                        <rect x="84" y="164" width="32" height="38" fill="${skd}"/>
+                        <ellipse cx="100" cy="120" rx="42" ry="56" fill="${sk}"/>
+                        <ellipse cx="100" cy="120" rx="42" ry="56" fill="url(#fs${uid})"/>
+                        <path d="M100 66 V174 M80 70 Q68 120 80 172 M120 70 Q132 120 120 172" stroke="${skd}" stroke-width="2.2" fill="none" opacity=".7"/>
+                        ${spines}
+                        ${petals}<circle cx="100" cy="60" r="5.5" fill="#f6c342"/>
+                        <ellipse cx="84" cy="118" rx="8" ry="5" fill="#f6f1e6"/><ellipse cx="116" cy="118" rx="8" ry="5" fill="#f6f1e6"/>
+                        <circle cx="84" cy="120" r="3" fill="#111"/><circle cx="116" cy="120" r="3" fill="#111"/>
+                        <path d="M75 117 H93 M107 117 H125" stroke="${skd}" stroke-width="3.2" stroke-linecap="round"/>
+                        <ellipse cx="72" cy="140" rx="7" ry="4.5" fill="#f08a8a" opacity=".55"/><ellipse cx="128" cy="140" rx="7" ry="4.5" fill="#f08a8a" opacity=".55"/>
+                        <ellipse cx="100" cy="150" rx="5.5" ry="6.5" fill="#3b1d1d"/>`;
+                    break;
+                }
+                case 'derretida': {
+                    const sk = '#b8c9d8', skd = shade(sk, -0.25);
+                    body = `
+                        ${shoulders('#6b2d5c')}
+                        <ellipse cx="100" cy="212" rx="48" ry="9" fill="${sk}" opacity=".9"/>
+                        <path d="M58 112 C 56 56, 144 56, 142 112 C 142 140, 138 150, 136 168 C 134 186, 124 186, 124 168 C 122 152, 114 156, 112 178 C 110 200, 98 200, 98 176 C 96 160, 88 152, 86 172 C 84 190, 72 188, 72 168 C 70 150, 58 142, 58 112 Z" fill="${sk}"/>
+                        <path d="M58 112 C 56 56, 144 56, 142 112 C 142 140, 138 150, 136 168 C 134 186, 124 186, 124 168 C 122 152, 114 156, 112 178 C 110 200, 98 200, 98 176 C 96 160, 88 152, 86 172 C 84 190, 72 188, 72 168 C 70 150, 58 142, 58 112 Z" fill="url(#fs${uid})"/>
+                        <path d="M58 106 C 58 58, 142 58, 142 106 C 130 82, 112 76, 100 76 C 88 76, 70 82, 58 106 Z" fill="#7b3fe4"/>
+                        <ellipse cx="82" cy="110" rx="9" ry="5.5" fill="#fffdf4"/><circle cx="82" cy="111" r="3.4" fill="#111"/>
+                        <ellipse cx="122" cy="136" rx="10" ry="6.5" fill="#fffdf4"/><circle cx="122" cy="138" r="4" fill="#111"/>
+                        <path d="M72 100 Q82 96 92 100 M112 124 Q122 120 134 126" stroke="${skd}" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <path d="M122 146 C 122 156, 118 164, 120 172" stroke="${sk}" stroke-width="4" fill="none" opacity=".0"/>
+                        <path d="M80 150 Q90 142 100 152 T122 152" stroke="#7d2f2f" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <path d="M96 128 Q100 138 96 142" stroke="${skd}" stroke-width="1.8" fill="none"/>
+                        <circle cx="146" cy="96" r="3" fill="${sk}" opacity=".7"/><circle cx="52" cy="140" r="2.4" fill="${sk}" opacity=".7"/>`;
+                    break;
+                }
+            }
+            return wrapPortraitSVG(p, uid, body);
+        }
+
+        function portraitSVG(p, uid) {
+            return p.wing === 'realistas' ? realisticSVG(p, uid) : bizarreSVG(p, uid);
+        }
+
+        
+// ===================== DATOS DESDE LA BASE DE DATOS =====================
+const API_URL = 'api/retratos.php';
+
+// Texto de la pestaña "Todas las salas" (las otras dos vienen de la tabla "salas")
+const INTRO_TODAS = "Dos salas, dos maneras de mirar: el rostro tal como es y el rostro tal como podría ser después de una noche entera de lectura.";
+
+let SALAS = {};          // slug -> {nombre, descripcion}
+let TODOS = [];          // todos los retratos ya normalizados
+let museumWing = 'todas';
+let museumList = [];
+let museumIndex = 0;
+
+const HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.8 8.4 2.6 4.5 6.4 4.5c2 0 3.4 1.1 4.1 2.3.4.6 1.2.6 1.6 0 .7-1.2 2.1-2.3 4.1-2.3 3.8 0 5.6 3.9 4 7.3C19.5 16.4 12 21 12 21z"/></svg>';
+
+function esc(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+// Convierte una fila de la API en el objeto que entienden las funciones de dibujo
+function normalizar(r) {
+    return {
+        ...r.parametros,
+        id: r.id,
+        wing: r.sala,
+        kind: r.tipo,
+        title: r.titulo,
+        year: r.anio,
+        medium: r.tecnica,
+        story: r.historia,
+        imagen: r.imagen,
+        likes: r.me_gusta,
+        views: r.vistas
+    };
+}
+
+function portraitSVG(p, uid) {
+    return p.wing === 'realistas' ? realisticSVG(p, uid) : bizarreSVG(p, uid);
+}
+
+function portraitArt(p, uid) {
+    return p.imagen
+        ? `<img src="${esc(p.imagen)}" alt="${esc(p.title)}">`
+        : portraitSVG(p, uid);
+}
+
+// ---- "Me gusta" recordado en este navegador (la cuenta global vive en MySQL)
+function likedSet() {
+    try { return new Set(JSON.parse(localStorage.getItem('museo_likes') || '[]')); }
+    catch (e) { return new Set(); }
+}
+function saveLiked(set) {
+    try { localStorage.setItem('museo_likes', JSON.stringify([...set])); } catch (e) {}
+}
+
+async function apiPost(id, accion) {
+    const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, accion })
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'Error en la API');
+    return data;
+}
+
+function mostrarEstado(titulo, mensaje) {
+    document.getElementById('museumGrid').innerHTML =
+        `<div class="estado"><strong>${esc(titulo)}</strong>${mensaje}</div>`;
+    document.getElementById('count').innerText = '';
+}
+
+async function cargarMuseo() {
+    mostrarEstado('Abriendo las salas…', 'Cargando la colección desde la base de datos.');
+    try {
+        const res = await fetch(API_URL, { headers: { 'Accept': 'application/json' } });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || 'La API devolvió un error.');
+
+        SALAS = {};
+        data.salas.forEach(s => { SALAS[s.slug] = s; });
+        TODOS = data.retratos.map(normalizar);
+        setMuseumWing('todas');
+    } catch (err) {
+        const abiertoComoArchivo = location.protocol === 'file:';
+        mostrarEstado(
+            'No se pudo cargar el museo',
+            abiertoComoArchivo
+                ? 'Abriste el archivo directamente. Copiá la carpeta <code>museo</code> a <code>C:\\xampp\\htdocs</code> y entrá a <code>http://localhost/museo/</code>.'
+                : esc(err.message || 'Revisá que Apache y MySQL estén iniciados en XAMPP y que hayas importado la base de datos.')
+        );
+    }
+}
+
+// ===================== SALAS Y GALERÍA =====================
+function setMuseumWing(wing) {
+    museumWing = wing;
+    ['todas', 'realistas', 'bizarros'].forEach(w => document.getElementById('tab-' + w).classList.toggle('tab-active', w === wing));
+    document.getElementById('wingIntro').innerText = wing === 'todas' ? INTRO_TODAS : (SALAS[wing] ? SALAS[wing].descripcion : '');
+    renderMuseumGrid();
+}
+
+function renderMuseumGrid() {
+    museumList = TODOS.filter(p => museumWing === 'todas' || p.wing === museumWing);
+    document.getElementById('count').innerText = museumList.length + ' obras expuestas';
+    if (!museumList.length) {
+        mostrarEstado('Sala vacía', 'Todavía no hay retratos en esta sala.');
+        return;
+    }
+    document.getElementById('museumGrid').innerHTML = museumList.map((p, i) => `
+        <figure class="portrait-card" style="animation-delay:${i * 50}ms" onclick="openPortraitDetail(${i})" title="Ver retrato en detalle">
+            <div class="spot"></div>
+            <span class="card-likes" data-likes-id="${p.id}">${HEART}${p.likes}</span>
+            <div class="gold-frame"><div class="frame-mat">${portraitArt(p, 'g' + i)}</div></div>
+            <figcaption class="plaque"><span class="plaque-title">${esc(p.title)}</span><span class="plaque-sub">${p.year} · ${esc(p.medium)}</span></figcaption>
+        </figure>`).join('');
+}
+
+// ===================== VISOR DE DETALLE =====================
+function openPortraitDetail(i) {
+    museumIndex = i;
+    renderPortraitDetail();
+    document.getElementById('portraitDetail').classList.add('open');
+    registrarVista(museumList[i]);
+}
+
+async function registrarVista(p) {
+    try {
+        const r = await apiPost(p.id, 'vista');
+        p.views = r.vistas;
+        if (museumList[museumIndex] && museumList[museumIndex].id === p.id) pintarStats(p);
+    } catch (e) { /* una vista que no se registra no debe romper la experiencia */ }
+}
+
+function pintarStats(p) {
+    const liked = likedSet().has(p.id);
+    const btn = document.getElementById('likeBtn');
+    btn.classList.toggle('liked', liked);
+    btn.setAttribute('aria-pressed', liked ? 'true' : 'false');
+    document.getElementById('likeLabel').innerText = liked ? 'Te gusta' : 'Me gusta';
+    document.getElementById('likeCount').innerText = p.likes;
+    document.getElementById('viewCount').innerText = p.views + (p.views === 1 ? ' visita' : ' visitas');
+}
+
+function renderPortraitDetail() {
+    const p = museumList[museumIndex];
+    if (!p) return;
+    document.getElementById('detailArt').innerHTML = `<div>${portraitArt(p, 'd' + museumIndex)}</div>`;
+    document.getElementById('detailWing').innerText = p.wing === 'realistas' ? 'Sala I · Realista' : 'Sala II · Bizarro';
+    document.getElementById('detailTitle').innerText = p.title;
+    document.getElementById('detailMeta').innerText = p.year + ' · ' + p.medium;
+    document.getElementById('detailStory').innerText = p.story;
+    document.getElementById('detailCounter').innerText = 'Obra ' + (museumIndex + 1) + ' de ' + museumList.length;
+    pintarStats(p);
+}
+
+async function toggleLike() {
+    const p = museumList[museumIndex];
+    if (!p) return;
+    const set = likedSet();
+    const quitar = set.has(p.id);
+    try {
+        const r = await apiPost(p.id, quitar ? 'unlike' : 'like');
+        quitar ? set.delete(p.id) : set.add(p.id);
+        saveLiked(set);
+        p.likes = r.me_gusta;
+        p.views = r.vistas;
+        pintarStats(p);
+        const badge = document.querySelector(`[data-likes-id="${p.id}"]`);
+        if (badge) badge.innerHTML = HEART + p.likes;
+    } catch (e) {
+        alert('No se pudo guardar tu "me gusta": ' + e.message);
+    }
+}
+
+function stepPortrait(d) {
+    if (!museumList.length) return;
+    museumIndex = (museumIndex + d + museumList.length) % museumList.length;
+    renderPortraitDetail();
+    registrarVista(museumList[museumIndex]);
+}
+
+function closePortraitDetail() {
+    document.getElementById('portraitDetail').classList.remove('open');
+}
+
+document.getElementById('addPortraitForm').addEventListener('submit', async event => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const button = form.querySelector('button[type="submit"]');
+    const status = document.getElementById('addStatus');
+    button.disabled = true;
+    status.innerText = 'Guardando retrato…';
+
+    try {
+        const res = await fetch(API_URL, { method: 'POST', body: new FormData(form) });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || 'No se pudo guardar el retrato.');
+        form.reset();
+        await cargarMuseo();
+        status.innerText = 'Retrato guardado y agregado a la colección.';
+    } catch (err) {
+        status.innerText = err.message || 'No se pudo guardar el retrato.';
+    } finally {
+        button.disabled = false;
+    }
+});
+
+document.addEventListener('keydown', e => {
+    const open = document.getElementById('portraitDetail').classList.contains('open');
+    if (e.key === 'Escape' && open) closePortraitDetail();
+    else if (open && e.key === 'ArrowRight') stepPortrait(1);
+    else if (open && e.key === 'ArrowLeft') stepPortrait(-1);
+});
+
+cargarMuseo();
+</script>
+</body>
+</html>

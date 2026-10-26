@@ -1,0 +1,70 @@
+MUSEO DE RETRATOS - PÁGINAS ABIERTAS (XAMPP)
+=============================================
+
+Estructura
+----------
+museo/
+  index.html                    Página del museo (consume la API)
+  api/config.php                Datos de conexión a MySQL
+  api/db.php                    Conexión PDO y helper de respuestas JSON
+  api/retratos.php              API: retratos, visitas, "me gusta" y carga de imágenes
+  uploads/retratos/             Imágenes PNG/JPG cargadas
+  database/museo_retratos.sql   Esquema + datos (14 retratos)
+
+Instalación
+-----------
+1. Abrí el Panel de control de XAMPP e iniciá "Apache" y "MySQL".
+
+2. Copiá la carpeta "museo" completa a:
+      C:\xampp\htdocs\museo
+
+3. Importá la base de datos:
+   a) Entrá a http://localhost/phpmyadmin
+   b) Pestaña "Importar" > "Seleccionar archivo" > elegí
+      C:\xampp\htdocs\museo\database\museo_retratos.sql
+   c) Botón "Importar" (abajo). El script crea la base "museo_retratos"
+      con las tablas "salas" y "retratos".
+
+4. Abrí http://localhost/museo/
+
+Si tu MySQL tiene contraseña para "root" (o usás otro puerto/usuario),
+editá api/config.php.
+
+Si ya tenías la base de datos importada antes de agregar la carga de imágenes,
+ejecutá una vez en phpMyAdmin:
+  ALTER TABLE retratos ADD COLUMN imagen VARCHAR(255) NULL AFTER parametros;
+La carpeta uploads/retratos debe permitir escritura al usuario de Apache.
+
+Tablas
+------
+salas     id, slug, nombre, descripcion, orden
+retratos  id, sala_id (FK), titulo, anio, tecnica, historia, tipo,
+          parametros (JSON con colores/rasgos para dibujar el SVG), imagen,
+          me_gusta, vistas, orden, activo, creado_en
+
+Agregar o editar retratos
+-------------------------
+Desde phpMyAdmin, tabla "retratos". Para ocultar uno poné activo = 0.
+Ejemplo de "parametros" para un retrato realista:
+  {"bg":["#6b7f5e","#2f3b2a"],"skin":"#d9a47c","hair":"bun","hairColor":"#8a8478",
+   "eye":"#4a2e17","cloth":"#2f4f6f","collar":{"type":"shirt","color":"#f4ead2"},
+   "glasses":true,"mouth":"smile","age":0.8}
+  hair: bun | long | curly | tufts | braids      mouth: smile | neutral
+  collar.type: shirt | round | scarf | poncho
+Para un bizarro, "tipo" vale: cyclops, tresojos, libro, taza, narizotas,
+buho, cactus o derretida, y "parametros" lleva solo {"bg":["#...","#..."]}.
+
+API
+---
+GET  http://localhost/museo/api/retratos.php
+POST http://localhost/museo/api/retratos.php
+     {"id": 3, "accion": "vista" | "like" | "unlike"}
+     Para agregar un retrato, usá el formulario de la página y elegí una imagen
+     PNG o JPG de hasta 5 MB.
+
+Problemas frecuentes
+--------------------
+- "No se pudo cargar el museo": MySQL apagado o base sin importar.
+- Pantalla con el mensaje de "abriste el archivo directamente": entrá por
+  http://localhost/museo/ y no haciendo doble clic en index.html.
+- Error en phpMyAdmin al importar: revisá que el archivo se importe como UTF-8.
